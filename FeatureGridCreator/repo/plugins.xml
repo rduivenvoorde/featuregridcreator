@@ -1,0 +1,12 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="plugins.xsl"?>
+ <plugins>
+   <pyqgis_plugin name="FeatureGridCreator" version="0.2">
+     <description>Feature Grid Creator</description>
+     <homepage> http://www.zuidt.nl</homepage>
+     <qgis_minimum_version>2.0</qgis_minimum_version>
+     <file_name>FeatureGridCreator.zip</file_name>
+     <author_name>Zuidt</author_name>
+     <download_url>http://zuidt.nl/qgis/FeatureGridCreator.zip</download_url>
+   </pyqgis_plugin>
+ </plugins> 
