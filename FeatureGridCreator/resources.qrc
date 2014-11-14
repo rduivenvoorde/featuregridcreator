@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/plugins/FeatureGridCreator">
+    <file>icon.png</file>
+    <file>icon2.png</file>
+  </qresource>
+</RCC>
