@@ -56,7 +56,8 @@ class FeatureGridCreator:
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
-            'FeatureGridCreator_{}.qm'.format(locale))
+            '{}.qm'.format(locale))
+            #'FeatureGridCreator_{}.qm'.format(locale))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
@@ -119,6 +120,12 @@ class FeatureGridCreator:
         self.toolbar = self.iface.addToolBar(u'FeatureGridCreator')
         self.toolbar.setObjectName(u'FeatureGridCreator')
 
+
+    def about(self):
+        infoString =  "Written by Richard Duivenvoorde (Zuidt)\nEmail - richard@zuidt.nl\n"
+        infoString += "Funded by - SOB Research - http://www.sobresearch.nl\n"
+        infoString += "Source: https://github.com/rduivenvoorde/featuregridcreator"
+        QMessageBox.information(self.iface.mainWindow(), "Feature Grid Creator About", infoString)
 
     def getSettingsValue(self, key, default=''):
         if QSettings().contains(self.SETTINGS_SECTION + key):
@@ -228,7 +235,7 @@ class FeatureGridCreator:
         status_tip=None,
         whats_this=None,
         parent=None):
-        """Add a toolbar icon to the InaSAFE toolbar.
+        """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
             path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
@@ -305,6 +312,13 @@ class FeatureGridCreator:
             callback=self.start_labeling,
             parent=self.iface.mainWindow())
 
+        # about
+        self.add_action(
+            ':/plugins/FeatureGridCreator/help.png',
+            text=self.tr(u'About'),
+            callback=self.about,
+            parent=self.iface.mainWindow())
+
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -350,18 +364,18 @@ class FeatureGridCreator:
         # check if current active layer is a polygon layer:
         layer =  self.iface.activeLayer()
         if layer == None:
-            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, ("No active layer found\n" "Please make one (multi)-polygon or (multi)-line layer active by choosing a layer in the legend"), QMessageBox.Ok, QMessageBox.Ok)
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate("featuregridcreator", "No active layer found\n" "Please make one (multi)-polygon or (multi)-line layer active by choosing a layer in the legend"), QMessageBox.Ok, QMessageBox.Ok)
             return
         # don't know if this is possible / needed
         if not layer.isValid():
-            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, ("No VALID layer found\n" "Please make one (multi)-polygon or (multi)-line layer active by choosing a layer in the legend"), QMessageBox.Ok, QMessageBox.Ok)
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate("featuregridcreator", "No VALID layer found\n" "Please make one (multi)-polygon or (multi)-line layer active by choosing a layer in the legend"), QMessageBox.Ok, QMessageBox.Ok)
             return
         if (layer.type()>0): # 0 = vector, 1 = raster
-            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, ("Please make one vector layer active by choosing a vector layer in the legend"), QMessageBox.Ok, QMessageBox.Ok)
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate("featuregridcreator", "Please make one vector layer active by choosing a vector layer in the legend"), QMessageBox.Ok, QMessageBox.Ok)
             return
         geom_type = layer.dataProvider().geometryType()
         if not(geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBLineString or geom_type == QGis.WKBMultiLineString):
-            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, ("Please make one (multi)-polygon or (multi)-line layer layer active by choosing a layer in the legend"), QMessageBox.Ok, QMessageBox.Ok)
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate("featuregridcreator", "Please make one (multi)-polygon or (multi)-line layer layer active by choosing a layer in the legend"), QMessageBox.Ok, QMessageBox.Ok)
             return
 
         # disable some dialog parts if geometries in the layer are lines

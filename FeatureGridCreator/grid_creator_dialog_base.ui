@@ -20,7 +20,7 @@
       <bool>true</bool>
      </property>
      <property name="title">
-      <string>Verband</string>
+      <string>Shape</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="1">
@@ -29,14 +29,14 @@
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Ruitvormig</string>
+         <string>Diamond</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
        <widget class="QRadioButton" name="radio_square">
         <property name="text">
-         <string>Vierkant</string>
+         <string>Square</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -59,7 +59,7 @@
    <item row="1" column="2" colspan="2">
     <widget class="QGroupBox" name="box_dy">
      <property name="title">
-      <string>Afstand in de Y-richting</string>
+      <string>Distance Y direction</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
@@ -85,7 +85,7 @@
    <item row="0" column="2">
     <widget class="QGroupBox" name="box_dx">
      <property name="title">
-      <string>Afstand in de X-richting</string>
+      <string>Distance X direction</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
@@ -111,13 +111,13 @@
    <item row="3" column="2">
     <widget class="QGroupBox" name="box_inside_polygons">
      <property name="title">
-      <string>Alleen binnen velden</string>
+      <string>Only inside polygons</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="0" column="0">
        <widget class="QCheckBox" name="cbx_inside_polygons">
         <property name="text">
-         <string>Alleen binnen de velden</string>
+         <string>Only inside polygons</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -130,7 +130,7 @@
    <item row="4" column="2">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Punten of sleuven</string>
+      <string>Points or Slots</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0">
@@ -139,7 +139,7 @@
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Punten</string>
+         <string>Points</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -165,7 +165,7 @@
       <item row="0" column="2">
        <widget class="QRadioButton" name="radio_polygons">
         <property name="text">
-         <string>Sleuven</string>
+         <string>Slots</string>
         </property>
        </widget>
       </item>
@@ -272,7 +272,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>breedte (cm)</string>
+         <string>width (cm)</string>
         </property>
        </widget>
       </item>
@@ -282,7 +282,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>lengte (cm)</string>
+         <string>length (cm)</string>
         </property>
        </widget>
       </item>
