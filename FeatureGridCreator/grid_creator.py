@@ -120,12 +120,15 @@ class FeatureGridCreator:
         self.toolbar = self.iface.addToolBar(u'FeatureGridCreator')
         self.toolbar.setObjectName(u'FeatureGridCreator')
 
-
     def about(self):
-        infoString =  "Written by Richard Duivenvoorde (Zuidt)\nEmail - richard@zuidt.nl\n"
-        infoString += "Funded by - SOB Research - http://www.sobresearch.nl\n"
-        infoString += "Source: https://github.com/rduivenvoorde/featuregridcreator"
-        QMessageBox.information(self.iface.mainWindow(), "Feature Grid Creator About", infoString)
+        about_str =  "Written by Richard Duivenvoorde (Zuidt)\nEmail - richard@zuidt.nl\n"
+        about_str += "Funded by - SOB Research - http://www.sobresearch.nl\n"
+        about_str += "Source: https://github.com/rduivenvoorde/featuregridcreator"
+        QMessageBox.information(self.iface.mainWindow(), "Feature Grid Creator About", about_str)
+
+    def help(self):
+        docs = os.path.join(os.path.dirname(__file__), "help/build/html", "index.html")
+        QDesktopServices.openUrl( QUrl("file:" + docs) )
 
     def getSettingsValue(self, key, default=''):
         if QSettings().contains(self.SETTINGS_SECTION + key):
@@ -310,6 +313,13 @@ class FeatureGridCreator:
             ':/plugins/FeatureGridCreator/icon2.png',
             text=self.tr(u'Label them'),
             callback=self.start_labeling,
+            parent=self.iface.mainWindow())
+
+        # help
+        self.add_action(
+            ':/plugins/FeatureGridCreator/help.png',
+            text=self.tr(u'Help'),
+            callback=self.help,
             parent=self.iface.mainWindow())
 
         # about

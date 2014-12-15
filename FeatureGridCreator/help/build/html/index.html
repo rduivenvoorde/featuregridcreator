@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to FeatureGridCreator’s documentation! &mdash; FeatureGridCreator 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="FeatureGridCreator 0.1 documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="#">FeatureGridCreator 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-featuregridcreator-s-documentation">
+<h1>Welcome to FeatureGridCreator&#8217;s documentation!<a class="headerlink" href="#welcome-to-featuregridcreator-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="section" id="installatie">
+<h2>Installatie<a class="headerlink" href="#installatie" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>De plugin kun je installeren door de volgende &#8216;repository url&#8217; toe te voegen aan je plugins repositories:</dt>
+<dd><a class="reference external" href="http://zuidt.nl/qgis/plugins.xml">http://zuidt.nl/qgis/plugins.xml</a></dd>
+</dl>
+<p>En dan de “FeatureGridCreator” plugin te installeren.</p>
+<p>Onderstaande knoppen zouden dan moeten verschijnen</p>
+<p>TODO: knoppen balk</p>
+<p>Wanneer een lijn of polygoonlaag actief is kan de eerste knop worden geklikt, onderstaande dialoog verschijnt dan:</p>
+<p>TODO: dialoog</p>
+</div>
+<div class="section" id="feature-grid-aanmaken">
+<h2>Feature grid aanmaken<a class="headerlink" href="#feature-grid-aanmaken" title="Permalink to this headline">¶</a></h2>
+<p>De plugin kan op dit moment:
+- voor een geselecteerde feature (of een hele laag), lijn of polygoon een grid aanmaken
+- dit grid kan vierkant of ruitvormig zijn, de afstanden zijn in te stellen
+- een grid kan punten of sleuven bevatten
+- de x en y afstand van de gridlijnen kunnen worden ingesteld
+- de breedte en hoogte van de sleuven kan worden ingesteld
+- de aangemaakte features komen in een (tijdelijke) memory layer
+- de features kunnen automatisch worden gelabeld door eroverheen te &#8216;hoveren&#8217;
+- de laatste instellingen worden onthouden
+- er kan gekozen worden om alleen BINNEN de polygonen features aan te maken (of juist niet, dan zal er RUIM om de polygoon heen punten worden aangemaakt</p>
+<p>TODO: screendump</p>
+</div>
+<div class="section" id="autolabeling">
+<h2>Autolabeling<a class="headerlink" href="#autolabeling" title="Permalink to this headline">¶</a></h2>
+<p>Na het aanmaken van de features, zal die laag automatisch actief zijn, en kan door op de tweede knop te klikken en over de features the bewegen automatisch labels verschijnen (genummerd vanaf 0)</p>
+</div>
+<div class="section" id="gebruik">
+<h2>Gebruik<a class="headerlink" href="#gebruik" title="Permalink to this headline">¶</a></h2>
+<p>Na het aanmaken van de features (en optioneel labels) dienen de aangemaakte feature te worden &#8216;gecopy/paste&#8217; naar de uiteindelijke laag, OF worden opgeslagen als een shapefile.
+Dit omdat de aangemaakte feature laag een zogenaamde &#8216;memory&#8217;-laag is, dus eigenlijk een tijdelijke laag is.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to FeatureGridCreator&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#installatie">Installatie</a></li>
+<li><a class="reference internal" href="#feature-grid-aanmaken">Feature grid aanmaken</a></li>
+<li><a class="reference internal" href="#autolabeling">Autolabeling</a></li>
+<li><a class="reference internal" href="#gebruik">Gebruik</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="#">FeatureGridCreator 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Zuidt.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
