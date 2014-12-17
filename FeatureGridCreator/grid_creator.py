@@ -71,7 +71,7 @@ class FeatureGridCreator:
         self.GRID_SQUARE = 1
         self.GRID_DIAMOND = 2
         self.POINT_FEATURES = 1
-        self.POLYGON_FEATURES = 2
+        self.TRENCH_FEATURES = 2
 
         # Create the dialog (after translation) and keep reference
         self.dlg = FeatureGridCreatorDialog()
@@ -99,17 +99,17 @@ class FeatureGridCreator:
         self.feature_type_group = QButtonGroup()
         self.feature_type_group.addButton(self.dlg.radio_points)
         self.feature_type_group.setId(self.dlg.radio_points, self.POINT_FEATURES)
-        self.feature_type_group.addButton(self.dlg.radio_polygons)
-        self.feature_type_group.setId(self.dlg.radio_polygons, self.POLYGON_FEATURES)
+        self.feature_type_group.addButton(self.dlg.radio_trenches)
+        self.feature_type_group.setId(self.dlg.radio_trenches, self.TRENCH_FEATURES)
         self.feature_type_group.buttonReleased.connect(self.feature_type_change_slot)
         self.feature_type_group.button(self.feature_type()).setChecked(True)
         self.feature_type_change_slot() # force a signal because above 'setChecked' does not fire a change signal?
 
         # init dx and dy values in dialog
-        self.dlg.spinBox_polygon_width.setValue(int(self.polygon_width()))
-        self.dlg.spinBox_polygon_height.setValue(int(self.polygon_height()))
-        self.dlg.spinBox_polygon_width.valueChanged.connect(self.polygon_width_change_slot)
-        self.dlg.spinBox_polygon_height.valueChanged.connect(self.polygon_height_change_slot)
+        self.dlg.spinBox_trench_width.setValue(int(self.trench_width()))
+        self.dlg.spinBox_trench_length.setValue(int(self.trench_length()))
+        self.dlg.spinBox_trench_width.valueChanged.connect(self.trench_width_change_slot)
+        self.dlg.spinBox_trench_length.valueChanged.connect(self.trench_length_change_slot)
 
         # Declare instance attributes
         self.actions = []
@@ -156,17 +156,17 @@ class FeatureGridCreator:
         else:
             self.setSettingsValue('dy', value)
 
-    def polygon_width(self, value=None):
+    def trench_width(self, value=None):
         if value is None:
-            return float(self.getSettingsValue('polygon_width', 100))
+            return float(self.getSettingsValue('trench_width', 100))
         else:
-            self.setSettingsValue('polygon_width', value)
+            self.setSettingsValue('trench_width', value)
 
-    def polygon_height(self, value=None):
+    def trench_length(self, value=None):
         if value is None:
-            return float(self.getSettingsValue('polygon_height', 100))
+            return float(self.getSettingsValue('trench_height', 100))
         else:
-            self.setSettingsValue('polygon_height', value)
+            self.setSettingsValue('trench_height', value)
 
     def grid_shape(self, value=None):
         if value is None:
@@ -192,11 +192,11 @@ class FeatureGridCreator:
     def dy_change_slot(self, dy):
         self.dy(dy)
 
-    def polygon_width_change_slot(self, w):
-        self.polygon_width(w)
+    def trench_width_change_slot(self, w):
+        self.trench_width(w)
 
-    def polygon_height_change_slot(self, h):
-        self.polygon_height(h)
+    def trench_length_change_slot(self, h):
+        self.trench_length(h)
 
     def grid_shape_change_slot(self, on):
         self.grid_shape(self.grid_shape_group.checkedId())
@@ -206,10 +206,10 @@ class FeatureGridCreator:
 
     def feature_type_change_slot(self):
         self.feature_type(self.feature_type_group.checkedId())
-        self.dlg.spinBox_polygon_height.setEnabled(self.dlg.radio_polygons.isChecked())
-        self.dlg.spinBox_polygon_width.setEnabled(self.dlg.radio_polygons.isChecked())
-        self.dlg.lbl_polygon_height.setEnabled(self.dlg.radio_polygons.isChecked())
-        self.dlg.lbl_polygon_width.setEnabled(self.dlg.radio_polygons.isChecked())
+        self.dlg.spinBox_trench_length.setEnabled(self.dlg.radio_trenches.isChecked())
+        self.dlg.spinBox_trench_width.setEnabled(self.dlg.radio_trenches.isChecked())
+        self.dlg.lbl_trench_length.setEnabled(self.dlg.radio_trenches.isChecked())
+        self.dlg.lbl_trench_width.setEnabled(self.dlg.radio_trenches.isChecked())
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -337,36 +337,6 @@ class FeatureGridCreator:
                 action)
             self.iface.removeToolBarIcon(action)
 
-    def create_line_geometries(self, startpoint, endpoint, distance, geom):
-        """Creating Points at coordinates along the line
-        """
-        length = geom.length()
-        current_distance = distance
-        feats = []
-
-        if endpoint > 0:
-            length = endpoint
-
-        # set the first point at startpoint
-        point = geom.interpolate(startpoint)
-        feature = QgsFeature()
-        feature.setAttributes([ '' ])
-        feature.setGeometry(self.create_geometry(point.asPoint().x(), point.asPoint().y()))
-        feats.append(feature)
-
-        while startpoint + current_distance <= length:
-            # Get a point along the line at the current distance
-            point = geom.interpolate(startpoint + current_distance)
-            # Create a new QgsFeature and assign it the new geometry
-            feature = QgsFeature()
-            feature.setAttributes([ '' ])
-            feature.setGeometry(self.create_geometry(point.asPoint().x(), point.asPoint().y()))
-            feats.append(feature)
-            # Increase the distance
-            current_distance = current_distance + distance
-
-        return feats
-
     def run(self):
         """Run method that performs all the real work"""
         #pydevd.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
@@ -414,7 +384,7 @@ class FeatureGridCreator:
         # give the memory layer the same CRS as the source layer
         crs=activeLayer.crs()
 
-        if self.feature_type()==self.POLYGON_FEATURES:
+        if self.feature_type()==self.TRENCH_FEATURES:
             memLayer = QgsVectorLayer("Polygon?crs=epsg:"+str(crs.postgisSrid())+"&index=yes", "grid polygons", "memory")
         else:
             memLayer = QgsVectorLayer("Point?crs=epsg:"+str(crs.postgisSrid())+"&index=yes", "grid points", "memory")
@@ -454,14 +424,13 @@ class FeatureGridCreator:
                 for row in range(0, int(math.ceil(bbox.height()/self.dy()))):
                     for column in range(0, int(math.ceil(bbox.width()/self.dx()))):
                         fet = QgsFeature()
-                        #geom = QgsGeometry.fromPoint(QgsPoint(start_x, start_y))
-                        geom = self.create_geometry(start_x, start_y)
+                        geom = self.create_point_or_trench(start_x, start_y)
                         if self.inside_polygons():
                             add_this_one = f.geometry().contains(geom)
                         if add_this_one:
-                            fet.setGeometry( geom )
+                            fet.setGeometry(geom)
                             #fet.setAttributes([ ''+str(fid) ])
-                            fet.setAttributes([ '' ])
+                            fet.setAttributes([''])
                             fts.append(fet)
                             fid += 1
                         start_x += self.dx()
@@ -469,35 +438,63 @@ class FeatureGridCreator:
                     if row%2 == 0:
                         start_x += ddx
                     start_y += self.dy()
-
+            # lines
             elif f.geometry().wkbType() == QGis.WKBLineString or f.geometry().wkbType() == QGis.WKBMultiLineString:
-                # line
-                fts.extend(self.create_line_geometries(0, 0, self.dx(), f.geometry()))
+                if self.feature_type() == self.TRENCH_FEATURES:
+                    start_x = self.trench_length()/100
+                fts.extend(self.handle_line(start_x, start_y, self.dx(), f.geometry()))
 
-        provider.addFeatures( fts )
-
+        provider.addFeatures(fts)
         memLayer.updateFields()
         memLayer.updateExtents()
-
         self.iface.mapCanvas().refresh()
+
         # make layer with new features active and editable
         self.iface.setActiveLayer(memLayer)
         # select all features in current memoryLayer
         ids = []
         for f in memLayer.getFeatures(QgsFeatureRequest()):
-	        ids.append(f.id())
+            ids.append(f.id())
         memLayer.setSelectedFeatures(ids)
         # set to editing
         memLayer.startEditing()
         self.layer = memLayer
 
-    def create_geometry(self, x, y):
-        if self.feature_type()==self.POLYGON_FEATURES:
-            # polygon width and height in centimeters
-            w = self.polygon_width()/100
-            h = self.polygon_height()/100
-            return QgsGeometry.fromRect(QgsRectangle(x-w, y-h, x+w, y+h))
+    def handle_line(self, start, end, interval, line_geom):
+        """Creating Points or Trenches at coordinates along the line
+        """
+        length = line_geom.length()
+        distance = start
+        if 0 < end <= length:
+            length = end
+        # array with all generated features
+        feats = []
+        while distance <= length:
+            # Get a point on the line at current distance
+            geom = line_geom.interpolate(distance)  # returns a QgsGeometry
+            # Create a new QgsFeature and assign it the new geometry
+            feature = QgsFeature()
+            feature.setAttributes([''])
+            feature.setGeometry(self.create_point_or_trench(geom.asPoint().x(), geom.asPoint().y(), line_geom))
+            feats.append(feature)
+            # Increase the distance
+            distance += interval
+
+        return feats
+
+    def create_point_or_trench(self, x, y, line_geom=None, distance=0):
+        if self.feature_type() == self.TRENCH_FEATURES:
+            # trench width and length in centimeters
+            w = self.trench_width()/100
+            l = self.trench_length()/100
+            if line_geom is not None:
+                # a line geom with trenches
+                return QgsGeometry.fromRect(QgsRectangle(x-l, y-w, x+l, y+w))
+            else:
+                # a polygon with trenches
+                return QgsGeometry.fromRect(QgsRectangle(x-l, y-w, x+l, y+w))
         else:
+            # a line or polygon with points
             return QgsGeometry.fromPoint(QgsPoint(x, y))
 
     def start_labeling(self):

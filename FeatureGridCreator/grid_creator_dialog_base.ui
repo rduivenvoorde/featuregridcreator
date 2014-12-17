@@ -130,7 +130,7 @@
    <item row="4" column="2">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Points or Slots</string>
+      <string>Points or Trenches</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0">
@@ -163,9 +163,9 @@
        </spacer>
       </item>
       <item row="0" column="2">
-       <widget class="QRadioButton" name="radio_polygons">
+       <widget class="QRadioButton" name="radio_trenches">
         <property name="text">
-         <string>Slots</string>
+         <string>Trenches</string>
         </property>
        </widget>
       </item>
@@ -209,7 +209,7 @@
        </spacer>
       </item>
       <item row="1" column="2">
-       <widget class="QSpinBox" name="spinBox_polygon_width">
+       <widget class="QSpinBox" name="spinBox_trench_width">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -238,7 +238,7 @@
        </spacer>
       </item>
       <item row="2" column="2">
-       <widget class="QSpinBox" name="spinBox_polygon_height">
+       <widget class="QSpinBox" name="spinBox_trench_length">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -267,7 +267,7 @@
        </spacer>
       </item>
       <item row="1" column="3">
-       <widget class="QLabel" name="lbl_polygon_width">
+       <widget class="QLabel" name="lbl_trench_width">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -277,7 +277,7 @@
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QLabel" name="lbl_polygon_height">
+       <widget class="QLabel" name="lbl_trench_length">
         <property name="enabled">
          <bool>false</bool>
         </property>
