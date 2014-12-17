@@ -470,32 +470,50 @@ class FeatureGridCreator:
         # array with all generated features
         feats = []
         while distance <= length:
-            # Get a point on the line at current distance
-            geom = line_geom.interpolate(distance)  # returns a QgsGeometry
             # Create a new QgsFeature and assign it the new geometry
             feature = QgsFeature()
             feature.setAttributes([''])
-            feature.setGeometry(self.create_point_or_trench(geom.asPoint().x(), geom.asPoint().y(), line_geom))
+            geom = self.create_point_or_trench_on_line(line_geom, distance, interval)
+            feature.setGeometry(geom)
             feats.append(feature)
             # Increase the distance
             distance += interval
-
         return feats
 
-    def create_point_or_trench(self, x, y, line_geom=None, distance=0):
+    def create_point_or_trench(self, x, y):
         if self.feature_type() == self.TRENCH_FEATURES:
             # trench width and length in centimeters
             w = self.trench_width()/100
             l = self.trench_length()/100
-            if line_geom is not None:
-                # a line geom with trenches
-                return QgsGeometry.fromRect(QgsRectangle(x-l, y-w, x+l, y+w))
-            else:
-                # a polygon with trenches
-                return QgsGeometry.fromRect(QgsRectangle(x-l, y-w, x+l, y+w))
+            # a polygon with trenches
+            return QgsGeometry.fromRect(QgsRectangle(x-l, y-w, x+l, y+w))
         else:
-            # a line or polygon with points
+            # a polygon with points
             return QgsGeometry.fromPoint(QgsPoint(x, y))
+
+    def create_point_or_trench_on_line(self, line_geom, distance, interval):
+        # Get a point on the line at current distance
+        geom = line_geom.interpolate(distance)  # interpolate returns a QgsGeometry
+        if self.feature_type() == self.TRENCH_FEATURES:
+            # trench width and length in centimeters
+            w = self.trench_width()/100
+            l = self.trench_length()/100
+            x1 = geom.asPoint().x()
+            y1 = geom.asPoint().y()
+            # a non rotated trenche
+            #return QgsGeometry.fromRect(QgsRectangle(x1-l, y1-w, x1+l, y1+w))
+            # a trench in the direction of the line
+            geom2 = line_geom.interpolate(distance + l)  # interpolate returns a QgsGeometry-point
+            line = QgsGeometry.fromPolyline([geom.asPoint(), geom2.asPoint()])
+            print line.exportToWkt()
+            # buffer(distance, segments, endcapstyle, joinstyle, mitrelimit)
+            # endcap 2 = flat
+            # join 1 = round
+            trench = line.buffer(w/2, 0, 2, 1, 1)
+            return trench
+        else:
+            # a line with points
+            return geom
 
     def start_labeling(self):
         #tool = PointHoverTool2(self.iface.mapCanvas(), self.layer)
