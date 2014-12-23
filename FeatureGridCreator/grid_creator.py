@@ -73,6 +73,10 @@ class FeatureGridCreator:
         self.POINT_FEATURES = 1
         self.TRENCH_FEATURES = 2
 
+        self.RESULT_FEATURE_POINT = 0
+        self.RESULT_FEATURE_TRENCH_STRAIGHT = 1
+        self.RESULT_FEATURE_TRENCH_BENDED_OR_SHORT = 2
+
         # Create the dialog (after translation) and keep reference
         self.dlg = FeatureGridCreatorDialog()
         # init dx and dy values in dialog
@@ -393,8 +397,30 @@ class FeatureGridCreator:
 
         provider = memLayer.dataProvider()
         provider.addAttributes( [
-                        QgsField("code", QVariant.String)
+                        QgsField("code", QVariant.String),
+                        QgsField("ftype", QVariant.Int),
                         ] )
+
+        # http://snorf.net/blog/2014/03/04/symbology-of-vector-layers-in-qgis-python-plugins/
+        # Categorized symbol renderer for different type of grid features: points, straight trench and bended or stort trench
+        # define a lookup: value -> (color, label)
+        ftype = {
+            '0': ('#00f', 'point'),
+            '1': ('#00f', 'trench straight'),
+            '2': ('#f00', 'trench bend or short'),
+            '': ('#000', 'Unknown'),
+        }
+        # create a category for each item in animals
+        categories = []
+        for feature_type, (color, label) in ftype.items():
+            symbol = QgsSymbolV2.defaultSymbol(memLayer.geometryType())
+            symbol.setColor(QColor(color))
+            category = QgsRendererCategoryV2(feature_type, symbol, label)
+            categories.append(category)
+        # create the renderer and assign it to a layer
+        expression = 'ftype' # field name
+        renderer = QgsCategorizedSymbolRendererV2(expression, categories)
+        memLayer.setRendererV2(renderer)
 
         fid = 0
         start_x = 0
@@ -424,13 +450,13 @@ class FeatureGridCreator:
                 for row in range(0, int(math.ceil(bbox.height()/self.dy()))):
                     for column in range(0, int(math.ceil(bbox.width()/self.dx()))):
                         fet = QgsFeature()
-                        geom = self.create_point_or_trench(start_x, start_y)
+                        geom_type = self.create_point_or_trench(start_x, start_y)
                         if self.inside_polygons():
-                            add_this_one = f.geometry().contains(geom)
+                            add_this_one = f.geometry().contains(geom_type[0])
                         if add_this_one:
-                            fet.setGeometry(geom)
+                            fet.setGeometry(geom_type[0])
                             #fet.setAttributes([ ''+str(fid) ])
-                            fet.setAttributes([''])
+                            fet.setAttributes(['', geom_type[1]])
                             fts.append(fet)
                             fid += 1
                         start_x += self.dx()
@@ -439,10 +465,12 @@ class FeatureGridCreator:
                         start_x += ddx
                     start_y += self.dy()
             # lines
-            elif f.geometry().wkbType() == QGis.WKBLineString or f.geometry().wkbType() == QGis.WKBMultiLineString:
+            elif f.geometry().wkbType() == QGis.WKBLineString:
                 if self.feature_type() == self.TRENCH_FEATURES:
-                    start_x = self.trench_length()/100
+                    start_x = 0
                 fts.extend(self.handle_line(start_x, start_y, self.dx(), f.geometry()))
+            elif f.geometry().wkbType() == QGis.WKBMultiLineString:
+                QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate("featuregridcreator", "Sorry, MultiLinestring currently not supported."), QMessageBox.Ok, QMessageBox.Ok)
 
         provider.addFeatures(fts)
         memLayer.updateFields()
@@ -473,9 +501,11 @@ class FeatureGridCreator:
             # Create a new QgsFeature and assign it the new geometry
             feature = QgsFeature()
             feature.setAttributes([''])
-            geom = self.create_point_or_trench_on_line(line_geom, distance, interval)
-            feature.setGeometry(geom)
-            feats.append(feature)
+            geom_type = self.create_point_or_trench_on_line(line_geom, distance, interval)
+            if geom_type[0] is not None:
+                feature.setGeometry(geom_type[0])
+                feature.setAttributes(['', geom_type[1]])
+                feats.append(feature)
             # Increase the distance
             distance += interval
         return feats
@@ -486,10 +516,10 @@ class FeatureGridCreator:
             w = self.trench_width()/100
             l = self.trench_length()/100
             # a polygon with trenches
-            return QgsGeometry.fromRect(QgsRectangle(x-l, y-w, x+l, y+w))
+            return (QgsGeometry.fromRect(QgsRectangle(x-l, y-w, x+l, y+w)), self.RESULT_FEATURE_TRENCH_STRAIGHT) # 1 meaning a straight trench
         else:
             # a polygon with points
-            return QgsGeometry.fromPoint(QgsPoint(x, y))
+            return (QgsGeometry.fromPoint(QgsPoint(x, y)), self.RESULT_FEATURE_POINT) # 0 meaning a point
 
     def create_point_or_trench_on_line(self, line_geom, distance, interval):
         # Get a point on the line at current distance
@@ -500,20 +530,58 @@ class FeatureGridCreator:
             l = self.trench_length()/100
             x1 = geom.asPoint().x()
             y1 = geom.asPoint().y()
-            # a non rotated trenche
+            # a non rotated trench
             #return QgsGeometry.fromRect(QgsRectangle(x1-l, y1-w, x1+l, y1+w))
             # a trench in the direction of the line
             geom2 = line_geom.interpolate(distance + l)  # interpolate returns a QgsGeometry-point
-            line = QgsGeometry.fromPolyline([geom.asPoint(), geom2.asPoint()])
-            print line.exportToWkt()
-            # buffer(distance, segments, endcapstyle, joinstyle, mitrelimit)
-            # endcap 2 = flat
-            # join 1 = round
-            trench = line.buffer(w/2, 0, 2, 1, 1)
-            return trench
+            vertices = [geom.asPoint()]
+            # BUT check if there are vertices on this line_geom in between
+            # see if there are vertices on the path here...
+            vertices.append(geom2.asPoint())
+            line = QgsGeometry.fromPolyline(vertices)
+            # checking if length of the generated line is as requested
+            # if the difference is more then 1 cm (comparing floats....)
+            # we either do NOT add it, or generate rounded caps
+            if (int(self.trench_length()) - int(line.length()*100)) > 1.0:
+                # buffer(distance, segments, endcapstyle, joinstyle, mitrelimit)
+                # endcap 2 = flat
+                # join 1 = round
+                #trench = line.buffer(w/2, 4, 1, 1, 1)
+                #trench = None
+
+                print "******************************"
+                print "******************************"
+                print line_geom.exportToWkt()
+                # print line_geom.touches(geom2)  # true
+                # line.closestSegmentWithContext(point, minDistPoint, afterVertex, 0, 0.00000001)
+                # returns a segmentWithContext like: (0.0, (104642,490373), 2)
+                # being: distance, point, segmentAfter
+                segment_context = line_geom.closestSegmentWithContext(geom.asPoint())
+                print segment_context[2]
+                segment_context2 = line_geom.closestSegmentWithContext(geom2.asPoint())
+                print segment_context2[2]
+                print line.exportToWkt()
+                ii = 1
+                for i in range(segment_context[2], segment_context2[2]):
+                    print "&&&&&&&&&&&&&&&&&&&&&&&&&&&"
+                    #new_vertex = line_geom.vertexAt(segment_context[2])
+                    new_vertex = line_geom.vertexAt(i)
+                    print new_vertex
+                    line.insertVertex(new_vertex.x(), new_vertex.y(), ii)
+                    ii += 1
+                    print line.exportToWkt()
+                trench = line.buffer(w/2, 0, 2, 1, 1)
+                # trench = line.buffer(w/2, 1, 1, 1, 1) # 'round' endcap
+                return (trench, self.RESULT_FEATURE_TRENCH_BENDED_OR_SHORT) # 2 meaning this is not a straight trench (a bended one)
+            else:
+                # buffer(distance, segments, endcapstyle, joinstyle, mitrelimit)
+                # endcap 2 = flat
+                # join 1 = round
+                trench = line.buffer(w/2, 0, 2, 1, 1)
+                return (trench, self.RESULT_FEATURE_TRENCH_STRAIGHT) # 1 meaning a straigh trench
         else:
             # a line with points
-            return geom
+            return (geom, self.RESULT_FEATURE_POINT) # 0 meaning a point
 
     def start_labeling(self):
         #tool = PointHoverTool2(self.iface.mapCanvas(), self.layer)
