@@ -43,7 +43,7 @@ EXTRAS = icon.png icon2.png metadata.txt
 
 COMPILED_RESOURCE_FILES = resources_rc.py
 
-UI_FILES = grid_creator_dialog_base.ui
+UI_FILES = grid_creator_dialog_base.ui grid_creator_labeler.ui
 
 
 #################################################
