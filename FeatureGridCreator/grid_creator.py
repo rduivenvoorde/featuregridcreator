@@ -590,6 +590,7 @@ class FeatureGridCreator:
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_VALID_LAYER), QMessageBox.Ok, QMessageBox.Ok)
             layer_problem = True
         if layer_problem:
+            self.create_action.setChecked(False)
             self.dlg.hide()
             return False
         # check if current active VECTOR layer has an OK type
@@ -598,6 +599,7 @@ class FeatureGridCreator:
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_WRONG_GEOM_TYPE), QMessageBox.Ok, QMessageBox.Ok)
             layer_problem = True
         if layer_problem:
+            self.create_action.setChecked(False)
             self.dlg.hide()
             return False
 
