@@ -72,7 +72,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>FeatureGridCreator</name>
     <message>
-        <location filename="grid_creator.py" line="433"/>
+        <location filename="grid_creator.py" line="436"/>
         <source>&amp;Feature Grid Creator</source>
         <translation>&amp;Feature Grid Creator</translation>
     </message>
@@ -136,37 +136,37 @@ Please select a set of features first, then enable this tool again and hover ove
 Selecteer eerst een of meer objecten, en gebruik dan deze knop weer en beweeg over de geselecteerde features.</translation>
     </message>
     <message>
-        <location filename="grid_creator.py" line="400"/>
+        <location filename="grid_creator.py" line="403"/>
         <source>Create a grid of trench or holes</source>
         <translation>Maak een grid van geulen of boorgaten</translation>
     </message>
     <message>
-        <location filename="grid_creator.py" line="407"/>
+        <location filename="grid_creator.py" line="410"/>
         <source>Label selected features</source>
         <translation>Label geselecteerde features</translation>
     </message>
     <message>
-        <location filename="grid_creator.py" line="415"/>
+        <location filename="grid_creator.py" line="418"/>
         <source>Help</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="grid_creator.py" line="423"/>
+        <location filename="grid_creator.py" line="426"/>
         <source>About</source>
         <translation>Extra</translation>
     </message>
     <message>
-        <location filename="grid_creator.py" line="485"/>
+        <location filename="grid_creator.py" line="488"/>
         <source>hole</source>
         <translation>boorgat</translation>
     </message>
     <message>
-        <location filename="grid_creator.py" line="489"/>
+        <location filename="grid_creator.py" line="492"/>
         <source>trench straight</source>
         <translation>rechte geul</translation>
     </message>
     <message>
-        <location filename="grid_creator.py" line="490"/>
+        <location filename="grid_creator.py" line="493"/>
         <source>trench bend or short</source>
         <translation>geboven of te korte geul</translation>
     </message>
@@ -211,7 +211,7 @@ Selecteer eerst een of meer objecten, en gebruik dan deze knop weer en beweeg ov
     <message>
         <location filename="grid_creator_dialog_base.ui" line="145"/>
         <source>Points</source>
-        <translation>Punten</translation>
+        <translation>Boringen</translation>
     </message>
     <message>
         <location filename="grid_creator_dialog_base.ui" line="278"/>
@@ -242,7 +242,7 @@ Selecteer eerst een of meer objecten, en gebruik dan deze knop weer en beweeg ov
 <context>
     <name>featuregridcreator</name>
     <message>
-        <location filename="grid_creator.py" line="551"/>
+        <location filename="grid_creator.py" line="554"/>
         <source>Sorry, MultiLinestring currently not supported.</source>
         <translation>Sorry, MultiLinestring lagen worden op dit moment niet ondersteund.</translation>
     </message>
