@@ -10,7 +10,7 @@
 name=Feature Grid Creator
 qgisMinimumVersion=2.0
 description=Creates a grid of features 
-version=0.1
+version=0.4
 author=Zuidt
 email=richard@zuidt.nl
 

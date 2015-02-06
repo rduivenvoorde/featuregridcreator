@@ -30,14 +30,18 @@ LOCALES = nl
 SOURCES = \
 	__init__.py \
 	grid_creator.py \
+	grid_creator_labeler_dialog.py \
 	grid_creator_dialog.py
 
 PLUGINNAME = FeatureGridCreator
 
 PY_FILES = \
 	grid_creator.py \
+	grid_creator_labeler_dialog.py \
 	grid_creator_dialog.py \
 	__init__.py
+
+HELP = help/html
 
 EXTRAS = icon.png icon2.png metadata.txt
 
@@ -50,7 +54,7 @@ UI_FILES = grid_creator_dialog_base.ui grid_creator_labeler.ui
 # Normally you would not need to edit below here
 #################################################
 
-HELP = help/build/html
+HELP = help/html/
 
 PLUGIN_UPLOAD = $(c)/plugin_upload.py
 
@@ -76,7 +80,7 @@ test: compile transcompile
 	@-export PYTHONPATH=`pwd`:$(PYTHONPATH); \
 		export QGIS_DEBUG=0; \
 		export QGIS_LOG_FILE=/dev/null; \
-		nosetests -v --with-id --with-coverage --cover-package=. \
+		nosetests -v --with-id --with-coverage --cover-package=. \cd
 		3>&1 1>&2 2>&3 3>&- || true
 	@echo "----------------------"
 	@echo "If you get a 'no module named qgis.core error, try sourcing"
@@ -85,7 +89,7 @@ test: compile transcompile
 	@echo "----------------------"
 
 #deploy: compile doc transcompile
-deploy: compile
+deploy: compile doc
 	@echo
 	@echo "------------------------------------------"
 	@echo "Deploying plugin to your .qgis2 directory."
@@ -100,7 +104,7 @@ deploy: compile
 	cp -vf $(COMPILED_RESOURCE_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(EXTRAS) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vfr i18n $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	#cp -vfr $(HELP) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/help
+	cp -vfr $(HELP) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/help
 
 # The dclean target removes compiled python files from plugin directory
 # also deletes any .svn entry

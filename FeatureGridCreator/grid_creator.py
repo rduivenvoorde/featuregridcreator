@@ -33,8 +33,8 @@ import sys
 from qgis.core import *
 from qgis.gui import *
 
-sys.path.append('/home/richard/apps/pycharm-3.4.1/pycharm-debug.egg')
-import pydevd
+#sys.path.append('/home/richard/apps/pycharm-3.4.1/pycharm-debug.egg')
+#import pydevd
 
 
 class FeatureGridCreator:
@@ -117,6 +117,8 @@ class FeatureGridCreator:
         self.dlg.spinBox_trench_width.valueChanged.connect(self.trench_width_change_slot)
         self.dlg.spinBox_trench_length.valueChanged.connect(self.trench_length_change_slot)
 
+        self.dlg.buttonBox.helpRequested.connect(self.help)
+
         self.grid_shape_group = QButtonGroup()
         # NOTE: first add to group, THEN assign an id to it
         self.grid_shape_group.addButton(self.dlg.radio_square)
@@ -146,6 +148,7 @@ class FeatureGridCreator:
         self.lbl_dlg.le_prefix.textChanged.connect(self.lbl_prefix_change_slot)
         self.lbl_dlg.spinbox_number.valueChanged.connect(self.lbl_number_change_slot)
         self.lbl_dlg.le_postfix.textChanged.connect(self.lbl_postfix_change_slot)
+        self.lbl_dlg.buttonBox.helpRequested.connect(self.help)
         self.label_example()  # init the example string
 
         # Declare instance attributes
@@ -161,7 +164,7 @@ class FeatureGridCreator:
         QMessageBox.information(self.iface.mainWindow(), "Feature Grid Creator About", self.MSG_ABOUT)
 
     def help(self):
-        docs = os.path.join(os.path.dirname(__file__), "help/build/html", "index.html")
+        docs = os.path.join(os.path.dirname(__file__), "help/html/en", "index.html")
         QDesktopServices.openUrl(QUrl("file:" + docs))
 
     def get_settings_value(self, key, default=''):
