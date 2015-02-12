@@ -26,7 +26,7 @@ changelog:
 # Tags are comma separated with spaces allowed
 tags=grid,boreholes,features,labeling
 
-homepage=https://github.com/rduivenvoorde/featuregridcreator
+homepage=https://rduivenvoorde.github.io/featuregridcreator/FeatureGridCreator/help/html/en/
 tracker=https://github.com/rduivenvoorde/featuregridcreator/issues
 repository=https://github.com/rduivenvoorde/featuregridcreator
 icon=icon.png
