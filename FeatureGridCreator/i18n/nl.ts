@@ -79,12 +79,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="grid_creator.py" line="74"/>
         <source>trenches</source>
-        <translation>geulen</translation>
+        <translation>werkputten</translation>
     </message>
     <message>
         <location filename="grid_creator.py" line="75"/>
         <source>holes</source>
-        <translation>gaten</translation>
+        <translation>boringen</translation>
     </message>
     <message>
         <location filename="grid_creator.py" line="76"/>
@@ -138,7 +138,7 @@ Selecteer eerst een of meer objecten, en gebruik dan deze knop weer en beweeg ov
     <message>
         <location filename="grid_creator.py" line="403"/>
         <source>Create a grid of trench or holes</source>
-        <translation>Maak een grid van geulen of boorgaten</translation>
+        <translation>Maak een grid van boringen of werkputten</translation>
     </message>
     <message>
         <location filename="grid_creator.py" line="410"/>
@@ -158,17 +158,17 @@ Selecteer eerst een of meer objecten, en gebruik dan deze knop weer en beweeg ov
     <message>
         <location filename="grid_creator.py" line="488"/>
         <source>hole</source>
-        <translation>boorgat</translation>
+        <translation>werkput</translation>
     </message>
     <message>
         <location filename="grid_creator.py" line="492"/>
         <source>trench straight</source>
-        <translation>rechte geul</translation>
+        <translation>rechte werkput</translation>
     </message>
     <message>
         <location filename="grid_creator.py" line="493"/>
         <source>trench bend or short</source>
-        <translation>geboven of te korte geul</translation>
+        <translation>geboven of te korte werkput</translation>
     </message>
 </context>
 <context>
@@ -231,12 +231,12 @@ Selecteer eerst een of meer objecten, en gebruik dan deze knop weer en beweeg ov
     <message>
         <location filename="grid_creator_dialog_base.ui" line="136"/>
         <source>Points or Trenches</source>
-        <translation>Punten of Geulen</translation>
+        <translation>Boringen of Werkputten</translation>
     </message>
     <message>
         <location filename="grid_creator_dialog_base.ui" line="171"/>
         <source>Trenches</source>
-        <translation>Geulen</translation>
+        <translation>Werkputten</translation>
     </message>
 </context>
 <context>

@@ -28,17 +28,16 @@ More information about the possibilities you can read in the next sections.
 Installation
 ------------
 
-Please install the FeatureGridCreator by adding the following 'repository url' to your list of repositories:
-	http://zuidt.nl/qgis/plugins.xml
+The FeatureGridCreator plugin is available in the QGIS plugin repository.
 
-In the near future the plugin will be available in the standard QGIS plugin repository. You can find it by searching for 'featuregridcreator'.
+To install, open the plugin manager, and find it by searching for 'featuregridcreator'.
 
 There select the "FeatureGridCreator" plugin to install it.
 
 .. figure:: /_static/buttons.png
    :align: left
 
-<== You should see have these buttons in your toolbar.
+<== You should now have these buttons in your toolbar, and a new item in the Plugins menu.
 
 The first button is to create a 'grid' of either point features ( (bore)holes) or polygon features (trenches)
 in a given.
