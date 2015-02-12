@@ -34,7 +34,7 @@ To install, open the plugin manager, and find it by searching for 'featuregridcr
 
 There select the "FeatureGridCreator" plugin to install it.
 
-.. figure:: /_static/buttons.png
+.. figure:: /static/buttons.png
    :align: left
 
 <== You should now have these buttons in your toolbar, and a new item in the Plugins menu.
@@ -65,47 +65,47 @@ You can set the distance in X and Y direction, and if you want them in a square 
 
 The following dialog:
 
-.. figure:: /_static/selection_points_square_dialog.png
+.. figure:: /static/selection_points_square_dialog.png
    :align: center
 
 Gives you this result: only points in a SQUARE arrangment INSIDE the selected area/polygon:
 
-.. figure:: /_static/selection_points_square.png
+.. figure:: /static/selection_points_square.png
    :align: center
 
 This is the result when you would have selected DIAMOND shaped, without a selection:
 
-.. figure:: /_static/all_points.png
+.. figure:: /static/all_points.png
    :align: center
 
 You can also select to create trenches for areas. These trenches will always be in north/south or west/east orientation.
 
 The same rules apply as for points in areas:
 
-.. figure:: /_static/selection_points_trenches_dialog.png
+.. figure:: /static/selection_points_trenches_dialog.png
    :align: center
 
 This figure shows you the result after UNchecking 'Only inside polygons', as you can see a bounding box is created
 and filled with features. This works best when done with a selected plot:
 
-.. figure:: /_static/selection_trenches_outside.png
+.. figure:: /static/selection_trenches_outside.png
    :align: center
 
 The idea is that you (after selecting all generated features) you can rotate them yourself with the default rotation
 tool of QGIS
 
-.. figure:: /_static/selection_trenches_outside_rotated.png
+.. figure:: /static/selection_trenches_outside_rotated.png
    :align: center
 
 
 After rotation you can 'clip' all features OUTSIDE the plut by using the 'Clip' tool from QGIS: Vector / Geoprocessing Tools /Clip:
 
-.. figure:: /_static/selection_trenches_outside_rotated_clip.png
+.. figure:: /static/selection_trenches_outside_rotated_clip.png
    :align: center
 
 This will give you the following result.
 
-.. figure:: /_static/selection_trenches_outside_rotated_clip_result.png
+.. figure:: /static/selection_trenches_outside_rotated_clip_result.png
    :align: center
 
 
@@ -114,7 +114,7 @@ a river, it is a good idea to create a temporarily line in another memory layer 
 
 Below is an example from point following a line:
 
-.. figure:: /_static/selection_points_line.png
+.. figure:: /static/selection_points_line.png
    :align: center
 
 If you use trenches to follow a line, it is good to know that for example asked for 10 meter long trenches, 10 meter
@@ -123,7 +123,7 @@ the end of the line it is possible that there is not enough space for a 10 meter
 To warn you for such 'non defined' trenches, we create two styles: a blue one for normal shapes, and a red one for
 trenches which are either bend, or to short:
 
-.. figure:: /_static/selection_trenches_line.png
+.. figure:: /static/selection_trenches_line.png
    :align: center
 
 
@@ -139,7 +139,7 @@ walk so to write down measurements or so.
 Anyway, the second plugin button (with the little numbers in it) is used for this. Clicking that button shows you the
 following dialog. The button will only appear when you have a vector layer active AND a selection in it:
 
-.. figure:: /_static/label_dialog_plus_selection.png
+.. figure:: /static/label_dialog_plus_selection.png
    :align: center
 
 As you can see it is possible to add a pre- or postfix to the numbering. It is also possible to set the starting number.
@@ -152,13 +152,13 @@ Besides the hovering the labels will be (temporarily) shown as labels in the mem
 IF you hovered over a wrong feature, you can go back one or more steps by clicking 'Ctrl-z', this will undo the last
 attribute and set the number sequence one value back.
 
-.. figure:: /_static/label_hovering.png
+.. figure:: /static/label_hovering.png
    :align: center
 
 If you open the attribute table you see two attributes: code (now partly filled) and ftype (feature type). The last
 attribute is used to denote a 'normal' or 'bend trench'
 
-.. figure:: /_static/label_hovering_attr_result.png
+.. figure:: /static/label_hovering_attr_result.png
    :align: center
 
 
