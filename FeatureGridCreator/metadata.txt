@@ -10,9 +10,10 @@
 name=Feature Grid Creator
 qgisMinimumVersion=2.0
 description=This plugin creates a grid of features, usable to fill a plot with a grid of boreholes for example. It can fill polygon(s) or follow line(s) with points (boreholes) or rectangles (trenches) in either a square or diamond order. You can also create code/numbers for the holes by hovering over them.
-version=1.0.0
+version=1.1.0
 author=Richard Duivenvoorde (Zuidt)
 email=richard@zuidt.nl
+category=Vector
 
 # End of mandatory metadata
 
@@ -20,6 +21,7 @@ email=richard@zuidt.nl
 
 # Uncomment the following line and add your changelog:
 changelog:
+    1.1.0 (02-2015)
     1.0.0 (02-2015) released to qgis repo
     0.4.0 (02-2015) first release
 
