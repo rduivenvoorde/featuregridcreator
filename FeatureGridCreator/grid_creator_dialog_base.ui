@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>433</width>
-    <height>566</height>
+    <height>508</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,7 +55,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::Help</set>
      </property>
     </widget>
    </item>
@@ -286,6 +286,13 @@
         </property>
         <property name="text">
          <string>length (cm)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="4">
+       <widget class="QProgressBar" name="progress_bar">
+        <property name="value">
+         <number>0</number>
         </property>
        </widget>
       </item>

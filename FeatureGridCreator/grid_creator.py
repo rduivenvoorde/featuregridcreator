@@ -101,6 +101,7 @@ class FeatureGridCreator:
         #
         # Create the main dialog (after translation) and keep reference
         self.dlg = FeatureGridCreatorDialog()
+        self.dlg.setModal(True)
         # init dx and dy values in dialog
         self.dlg.spinBox_dx.setValue(int(self.dx()))
         self.dlg.spinBox_dy.setValue(int(self.dy()))
@@ -117,7 +118,9 @@ class FeatureGridCreator:
         self.dlg.spinBox_trench_width.valueChanged.connect(self.trench_width_change_slot)
         self.dlg.spinBox_trench_length.valueChanged.connect(self.trench_length_change_slot)
 
+        self.dlg.buttonBox.button(QDialogButtonBox.Apply).clicked.connect(self.create_features)
         self.dlg.buttonBox.helpRequested.connect(self.help)
+        self.dlg.buttonBox.rejected.connect(self.hide_create_features_dialog)
 
         self.grid_shape_group = QButtonGroup()
         # NOTE: first add to group, THEN assign an id to it
@@ -403,7 +406,7 @@ class FeatureGridCreator:
         self.create_action = self.add_action(
             ':/plugins/FeatureGridCreator/icon.png',
             text=self.tr(u'Create a grid of trench or holes'),
-            callback=self.run,
+            callback=self.show_create_features_dialog,
             parent=self.iface.mainWindow())
         self.create_action.setCheckable(True)
 
@@ -438,33 +441,76 @@ class FeatureGridCreator:
                 action)
             self.iface.removeToolBarIcon(action)
 
-    def run(self):
-        """Run method that performs all the real work"""
+    def show_create_features_dialog(self):
+        """Init and show dialog"""
         #pydevd.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
 
-        if self.init_dialog():
+        if self.init_create_features_dialog():
             # show the dialog
             self.dlg.show()
-            # update the dialog when user changes layer during open dialog
-            self.iface.currentLayerChanged.connect(self.init_dialog)
         else:
             return
         self.create_action.setChecked(True)
-        # Run the dialog event loop
-        result = self.dlg.exec_()
-        # remove currentLayerChanged events
-        self.iface.currentLayerChanged.disconnect(self.init_dialog)
-        # See if OK was pressed
-        if result == 0:
+
+    def hide_create_features_dialog(self):
+        self.create_action.setChecked(False)
+
+    def init_create_features_dialog(self):
+        """
+        init dialog based on layer type
+        :param self:
+        :return: true if ok, false if wrong type of layer
+        """
+        # check if current active layer is a polygon layer:
+        layer = self.iface.activeLayer()
+        layer_problem = False
+        if layer is None:
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_ACTIVE_LAYER), QMessageBox.Ok, QMessageBox.Ok)
+            layer_problem = True
+        elif layer.type() > 0:  # 0 = vector, 1 = raster
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_VECTOR_LAYER), QMessageBox.Ok, QMessageBox.Ok)
+            layer_problem = True
+        # don't know if this is possible / needed
+        elif not layer.isValid():
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_VALID_LAYER), QMessageBox.Ok, QMessageBox.Ok)
+            layer_problem = True
+        if layer_problem:
             self.create_action.setChecked(False)
-            return
+            self.dlg.hide()
+            return False
+        # check if current active VECTOR layer has an OK type
+        geom_type = layer.dataProvider().geometryType()
+        if not(geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBLineString or geom_type == QGis.WKBMultiLineString):
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_WRONG_GEOM_TYPE), QMessageBox.Ok, QMessageBox.Ok)
+            layer_problem = True
+        if layer_problem:
+            self.create_action.setChecked(False)
+            self.dlg.hide()
+            return False
 
-        active_layer = self.iface.mapCanvas().currentLayer()
+        # disable some dialog parts if geometries in the layer are lines
+        geoms_are_polygons = (geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon)
+        self.dlg.box_dy.setEnabled(geoms_are_polygons)
+        self.dlg.box_grid_shape.setEnabled(geoms_are_polygons)
+        self.dlg.box_inside_polygons.setEnabled(geoms_are_polygons)
+        self.dlg.progress_bar.setValue(0)
 
-        if len(active_layer.selectedFeatures()) < 1:
-            features = active_layer.getFeatures()
-        else:
-            features = active_layer.selectedFeatures()
+        # now use current active layer as current for the rest of this 'dialog session'
+        self.current_layer = self.iface.mapCanvas().currentLayer()
+        return True
+
+    def create_features(self):
+        active_layer = self.current_layer # self.current_layer is current when dialog was initalised
+        self.dlg.progress_bar.setValue(0)
+
+        # for size of progress bar
+        fcount = 0
+        if len(active_layer.selectedFeatures()) < 1: # NO selection
+            features = active_layer.getFeatures()  # iterator
+            fcount = active_layer.featureCount()
+        else: # selected features
+            features = active_layer.selectedFeatures()  # features[]
+            fcount = len(features)
 
         # give the memory layer the same CRS as the source layer
         crs = active_layer.crs()
@@ -513,7 +559,9 @@ class FeatureGridCreator:
             ddx = 0.5 * self.dx()
         add_this_one = True
         fts = []
+        self.dlg.progress_bar.setMaximum(fcount)
         for f in features:
+            self.dlg.progress_bar.setValue(self.dlg.progress_bar.value() + 1)
             if f.geometry().wkbType() == QGis.WKBPolygon or f.geometry().wkbType() == QGis.WKBMultiPolygon:
                 # polygon
                 bbox = f.geometry().boundingBox()
@@ -569,46 +617,6 @@ class FeatureGridCreator:
         memory_lyr.startEditing()
         self.layer = memory_lyr
         self.create_action.setChecked(False)
-
-    def init_dialog(self):
-        """
-        init dialog based on layer type
-        :param self:
-        :return: true if ok, false if wrong type of layer
-        """
-        # check if current active layer is a polygon layer:
-        layer = self.iface.activeLayer()
-        layer_problem = False
-        if layer is None:
-            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_ACTIVE_LAYER), QMessageBox.Ok, QMessageBox.Ok)
-            layer_problem = True
-        elif layer.type() > 0:  # 0 = vector, 1 = raster
-            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_VECTOR_LAYER), QMessageBox.Ok, QMessageBox.Ok)
-            layer_problem = True
-        # don't know if this is possible / needed
-        elif not layer.isValid():
-            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_VALID_LAYER), QMessageBox.Ok, QMessageBox.Ok)
-            layer_problem = True
-        if layer_problem:
-            self.create_action.setChecked(False)
-            self.dlg.hide()
-            return False
-        # check if current active VECTOR layer has an OK type
-        geom_type = layer.dataProvider().geometryType()
-        if not(geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBLineString or geom_type == QGis.WKBMultiLineString):
-            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_WRONG_GEOM_TYPE), QMessageBox.Ok, QMessageBox.Ok)
-            layer_problem = True
-        if layer_problem:
-            self.create_action.setChecked(False)
-            self.dlg.hide()
-            return False
-
-        # disable some dialog parts if geometries in the layer are lines
-        geoms_are_polygons = (geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon)
-        self.dlg.box_dy.setEnabled(geoms_are_polygons)
-        self.dlg.box_grid_shape.setEnabled(geoms_are_polygons)
-        self.dlg.box_inside_polygons.setEnabled(geoms_are_polygons)
-        return True
 
     def handle_line(self, start, end, interval, line_geom):
         """Creating Points or Trenches at coordinates along the line
