@@ -21,7 +21,7 @@ category=Vector
 
 # Uncomment the following line and add your changelog:
 changelog:
-    1.1.0 (02-2015)
+    1.1.0 (02-2015) moved to vector menu, bigger x,y distances possible, added progressbar, textual fixes
     1.0.0 (02-2015) released to qgis repo
     0.4.0 (02-2015) first release
 

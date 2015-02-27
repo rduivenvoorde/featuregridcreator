@@ -1,6 +1,5 @@
 *.pyc
 *.swp
-*.zip
 FeatureGridCreator/help/html
 FeatureGridCreator/help/build
 .idea

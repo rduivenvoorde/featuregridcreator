@@ -158,7 +158,7 @@ Selecteer eerst een of meer objecten, en gebruik dan deze knop weer en beweeg ov
     <message>
         <location filename="grid_creator.py" line="488"/>
         <source>hole</source>
-        <translation>werkput</translation>
+        <translation>boring</translation>
     </message>
     <message>
         <location filename="grid_creator.py" line="492"/>
@@ -168,7 +168,7 @@ Selecteer eerst een of meer objecten, en gebruik dan deze knop weer en beweeg ov
     <message>
         <location filename="grid_creator.py" line="493"/>
         <source>trench bend or short</source>
-        <translation>geboven of te korte werkput</translation>
+        <translation>kromme of te korte werkput</translation>
     </message>
 </context>
 <context>
