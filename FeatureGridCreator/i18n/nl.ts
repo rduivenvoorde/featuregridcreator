@@ -29,22 +29,22 @@
     <message>
         <location filename="grid_creator_labeler.ui" line="42"/>
         <source>postfix</source>
-        <translation>voorvoegsel</translation>
+        <translation>achtervoegsel</translation>
     </message>
     <message>
         <location filename="grid_creator_labeler.ui" line="52"/>
         <source>prefix</source>
-        <translation>achtervoegsel</translation>
+        <translation>voorvoegsel</translation>
     </message>
     <message>
         <location filename="grid_creator_labeler.ui" line="59"/>
         <source>Prefix</source>
-        <translation>Achtervoegsel</translation>
+        <translation>Voorvoegsel</translation>
     </message>
     <message>
         <location filename="grid_creator_labeler.ui" line="66"/>
         <source>Postfix</source>
-        <translation>Voorvoegsel</translation>
+        <translation>Achtervoegsel</translation>
     </message>
     <message>
         <location filename="grid_creator_labeler.ui" line="89"/>
