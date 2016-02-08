@@ -103,8 +103,8 @@ class FeatureGridCreator:
         self.dlg = FeatureGridCreatorDialog()
         self.dlg.setModal(True)
         # init dx and dy values in dialog
-        self.dlg.spinBox_dx.setValue(int(self.dx()))
-        self.dlg.spinBox_dy.setValue(int(self.dy()))
+        self.dlg.spinBox_dx.setValue(float(self.dx()))
+        self.dlg.spinBox_dy.setValue(float(self.dy()))
         self.dlg.spinBox_dx.valueChanged.connect(self.dx_change_slot)
         self.dlg.spinBox_dy.valueChanged.connect(self.dy_change_slot)
 
@@ -574,8 +574,8 @@ class FeatureGridCreator:
                         bbox.setXMaximum(bbox.center().x() + bbox.height() / 2)
                         bbox.setXMinimum(bbox.center().x() - bbox.height() / 2)
 
-                start_x = bbox.xMinimum() + int(self.dx() / 2)
-                start_y = bbox.yMinimum() + int(self.dy() / 2)
+                start_x = bbox.xMinimum() + float(self.dx() / 2)
+                start_y = bbox.yMinimum() + float(self.dy() / 2)
                 for row in range(0, int(math.ceil(bbox.height() / self.dy()))):
                     for column in range(0, int(math.ceil(bbox.width() / self.dx()))):
                         fet = QgsFeature()
@@ -589,7 +589,7 @@ class FeatureGridCreator:
                             fts.append(fet)
                             fid += 1
                         start_x += self.dx()
-                    start_x = bbox.xMinimum() + int(self.dx() / 2)
+                    start_x = bbox.xMinimum() + float(self.dx() / 2)
                     if row % 2 == 0:
                         start_x += ddx
                     start_y += self.dy()

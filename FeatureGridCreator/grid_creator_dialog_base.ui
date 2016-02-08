@@ -66,12 +66,15 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
-       <widget class="QSpinBox" name="spinBox_dy">
+       <widget class="QDoubleSpinBox" name="spinBox_dy">
         <property name="minimum">
-         <number>1</number>
+         <double>0.100000000000000</double>
         </property>
         <property name="maximum">
-         <number>100000</number>
+         <double>9999.989999999999782</double>
+        </property>
+        <property name="value">
+         <double>10.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -92,12 +95,15 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
-       <widget class="QSpinBox" name="spinBox_dx">
+       <widget class="QDoubleSpinBox" name="spinBox_dx">
         <property name="minimum">
-         <number>1</number>
+         <double>0.100000000000000</double>
         </property>
         <property name="maximum">
-         <number>100000</number>
+         <double>9999.989999999999782</double>
+        </property>
+        <property name="value">
+         <double>10.000000000000000</double>
         </property>
        </widget>
       </item>
