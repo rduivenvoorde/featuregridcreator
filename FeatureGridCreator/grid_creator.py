@@ -480,7 +480,7 @@ class FeatureGridCreator:
             return False
         # check if current active VECTOR layer has an OK type
         geom_type = layer.dataProvider().geometryType()
-        if not(geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBLineString or geom_type == QGis.WKBMultiLineString):
+        if not(geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBLineString or geom_type == QGis.WKBMultiLineString or geom_type == QGis.WKBPolygon25D or geom_type == QGis.WKBMultiPolygon25D ):
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_WRONG_GEOM_TYPE), QMessageBox.Ok, QMessageBox.Ok)
             layer_problem = True
         if layer_problem:
@@ -489,7 +489,7 @@ class FeatureGridCreator:
             return False
 
         # disable some dialog parts if geometries in the layer are lines
-        geoms_are_polygons = (geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon)
+        geoms_are_polygons = (geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBPolygon25D or geom_type == QGis.WKBMultiPolygon25D  )
         self.dlg.box_dy.setEnabled(geoms_are_polygons)
         self.dlg.box_grid_shape.setEnabled(geoms_are_polygons)
         self.dlg.box_inside_polygons.setEnabled(geoms_are_polygons)
@@ -562,7 +562,7 @@ class FeatureGridCreator:
         self.dlg.progress_bar.setMaximum(fcount)
         for f in features:
             self.dlg.progress_bar.setValue(self.dlg.progress_bar.value() + 1)
-            if f.geometry().wkbType() == QGis.WKBPolygon or f.geometry().wkbType() == QGis.WKBMultiPolygon:
+            if f.geometry().wkbType() == QGis.WKBPolygon or f.geometry().wkbType() == QGis.WKBMultiPolygon or f.geometry().wkbType() == QGis.WKBPolygon25D or f.geometry().wkbType() == QGis.WKBMultiPolygon25D :
                 # polygon
                 bbox = f.geometry().boundingBox()
                 if not self.inside_polygons():
