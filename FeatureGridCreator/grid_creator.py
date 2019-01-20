@@ -86,6 +86,8 @@ class FeatureGridCreator:
             'Please make it editable, then enable this tool again and hover over the selected features.')
         self.MSG_NO_SELECTED_FEATURES = self.tr('Layer has no selected features\n' + \
             'Please select a set of features first, then enable this tool again and hover over the features.')
+        self.MSG_NO_METER_LAYER = self.tr('Layers crs is not in Unit "meters"\n' + \
+                                          'Please use data which has crs in meters, not in e.g. Degrees (not LatLon).')
 
         self.GRID_SQUARE = 1
         self.GRID_DIAMOND = 2
@@ -482,6 +484,10 @@ class FeatureGridCreator:
         geom_type = layer.dataProvider().geometryType()
         if not(geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBLineString or geom_type == QGis.WKBMultiLineString or geom_type == QGis.WKBPolygon25D or geom_type == QGis.WKBMultiPolygon25D ):
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_WRONG_GEOM_TYPE), QMessageBox.Ok, QMessageBox.Ok)
+            layer_problem = True
+        # check layer's projection is not a geographical projection force units in meters
+        if layer.crs().mapUnits() != QGis.UnitType.Meters:
+            QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_METER_LAYER), QMessageBox.Ok, QMessageBox.Ok)
             layer_problem = True
         if layer_problem:
             self.create_action.setChecked(False)
