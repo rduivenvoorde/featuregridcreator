@@ -486,7 +486,7 @@ class FeatureGridCreator:
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_WRONG_GEOM_TYPE), QMessageBox.Ok, QMessageBox.Ok)
             layer_problem = True
         # check layer's projection is not a geographical projection force units in meters
-        if layer.crs().mapUnits() != QGis.UnitType.Meters:
+        if layer.crs().mapUnits() != QGis.Meters:
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_METER_LAYER), QMessageBox.Ok, QMessageBox.Ok)
             layer_problem = True
         if layer_problem:
