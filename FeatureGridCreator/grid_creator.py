@@ -20,22 +20,67 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-# Initialize Qt resources from file resources.py
-import resources_rc
-# Import the code for the dialog
-from grid_creator_dialog import FeatureGridCreatorDialog
-from grid_creator_labeler_dialog import FeatureGridCreatorLabelerDialog
 import os.path
 import math
-import sys
-from qgis.core import *
-from qgis.gui import *
+# Qt
+from qgis.PyQt.QtCore import (
+    qVersion, 
+    QCoreApplication, 
+    QSettings, 
+    Qt,
+    QTranslator, 
+    QVariant, 
+    QUrl
+)
+from qgis.PyQt.QtGui import (
+    QColor,
+    QCursor,
+    QDesktopServices,
+    QFont, 
+    QIcon,
+    QPixmap
+)
+from qgis.PyQt.QtWidgets import (
+    QAction,
+    QButtonGroup, 
+    QDialogButtonBox,
+    QMessageBox
+)
+# Qgis
+from qgis.core import (
+    QgsCategorizedSymbolRenderer, 
+    QgsFeature,
+    QgsFeatureRequest,
+    QgsField,
+    QgsGeometry,
+    QgsPalLayerSettings,
+    QgsPoint,
+    QgsPointXY,
+    QgsProject,
+    QgsRectangle, 
+    QgsRendererCategory, 
+    QgsSymbol,
+    QgsTextBufferSettings, 
+    QgsTextFormat, 
+    QgsUnitTypes,    
+    QgsVectorLayer,
+    QgsVectorLayerSimpleLabeling, 
+    QgsWkbTypes
+)
+from qgis.gui import (
+    QgsMapTool
+)
 
-#sys.path.append('/home/richard/apps/pycharm-3.4.1/pycharm-debug.egg')
-#import pydevd
+from grid_creator_dialog import FeatureGridCreatorDialog
+from grid_creator_labeler_dialog import FeatureGridCreatorLabelerDialog
 
+# get the logger for this plugin
+import logging
+from . import LOGGER_NAME
+log = logging.getLogger(LOGGER_NAME)
+
+# Initialize Qt resources from file resources.py
+#import resources_rc
 
 class FeatureGridCreator:
     """QGIS Plugin Implementation."""
@@ -302,7 +347,7 @@ class FeatureGridCreator:
         self.label_example()
 
     def label(self, number):
-        lbl = unicode(number)
+        lbl = str(number)
         if not self.lbl_prefix() in ['prefix', '']:
             lbl = self.lbl_prefix() + '_' + lbl
         if not self.lbl_postfix() in ['postfix', '']:
@@ -481,12 +526,14 @@ class FeatureGridCreator:
             self.dlg.hide()
             return False
         # check if current active VECTOR layer has an OK type
-        geom_type = layer.dataProvider().geometryType()
-        if not(geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBLineString or geom_type == QGis.WKBMultiLineString or geom_type == QGis.WKBPolygon25D or geom_type == QGis.WKBMultiPolygon25D ):
+        geom_type = layer.dataProvider().wkbType()
+        if not(geom_type == QgsWkbTypes.Polygon or geom_type == QgsWkbTypes.MultiPolygon or \
+                geom_type == QgsWkbTypes.LineString or geom_type == QgsWkbTypes.MultiLineString or \
+                geom_type == QgsWkbTypes.Polygon25D or geom_type == QgsWkbTypes.MultiPolygon25D ):
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_WRONG_GEOM_TYPE), QMessageBox.Ok, QMessageBox.Ok)
             layer_problem = True
         # check layer's projection is not a geographical projection force units in meters
-        if layer.crs().mapUnits() != QGis.Meters:
+        if layer.crs().mapUnits() !=  QgsUnitTypes.DistanceMeters:
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_METER_LAYER), QMessageBox.Ok, QMessageBox.Ok)
             layer_problem = True
         if layer_problem:
@@ -495,7 +542,8 @@ class FeatureGridCreator:
             return False
 
         # disable some dialog parts if geometries in the layer are lines
-        geoms_are_polygons = (geom_type == QGis.WKBPolygon or geom_type == QGis.WKBMultiPolygon or geom_type == QGis.WKBPolygon25D or geom_type == QGis.WKBMultiPolygon25D  )
+        geoms_are_polygons = (geom_type == QgsWkbTypes.Polygon or geom_type == QgsWkbTypes.MultiPolygon or \
+            geom_type == QgsWkbTypes.Polygon25D or geom_type == QgsWkbTypes.MultiPolygon25D  )
         self.dlg.box_dy.setEnabled(geoms_are_polygons)
         self.dlg.box_grid_shape.setEnabled(geoms_are_polygons)
         self.dlg.box_inside_polygons.setEnabled(geoms_are_polygons)
@@ -522,11 +570,11 @@ class FeatureGridCreator:
         crs = active_layer.crs()
 
         if self.feature_type() == self.TRENCH_FEATURES:
-            memory_lyr = QgsVectorLayer("Polygon?crs=epsg:" + unicode(crs.postgisSrid()) + "&index=yes", self.MSG_TRENCHES, "memory")
+            memory_lyr = QgsVectorLayer("Polygon?crs=epsg:" + str(crs.postgisSrid()) + "&index=yes", self.MSG_TRENCHES, "memory")
         else:
-            memory_lyr = QgsVectorLayer("Point?crs=epsg:" + unicode(crs.postgisSrid()) + "&index=yes", self.MSG_HOLES, "memory")
+            memory_lyr = QgsVectorLayer("Point?crs=epsg:" + str(crs.postgisSrid()) + "&index=yes", self.MSG_HOLES, "memory")
 
-        QgsMapLayerRegistry.instance().addMapLayer(memory_lyr)
+        QgsProject.instance().addMapLayer(memory_lyr)
 
         provider = memory_lyr.dataProvider()
         provider.addAttributes([
@@ -548,14 +596,14 @@ class FeatureGridCreator:
         # create a category for each
         categories = []
         for feature_type, (color, label) in ftype.items():
-            symbol = QgsSymbolV2.defaultSymbol(memory_lyr.geometryType())
+            symbol = QgsSymbol.defaultSymbol(memory_lyr.geometryType())
             symbol.setColor(QColor(color))
-            category = QgsRendererCategoryV2(feature_type, symbol, label)
+            category = QgsRendererCategory(feature_type, symbol, label)
             categories.append(category)
         # create the renderer and assign it to a layer
         expression = 'ftype'  # field name
-        renderer = QgsCategorizedSymbolRendererV2(expression, categories)
-        memory_lyr.setRendererV2(renderer)
+        renderer = QgsCategorizedSymbolRenderer(expression, categories)
+        memory_lyr.setRenderer(renderer)
 
         fid = 0
         start_x = 0
@@ -568,7 +616,8 @@ class FeatureGridCreator:
         self.dlg.progress_bar.setMaximum(fcount)
         for f in features:
             self.dlg.progress_bar.setValue(self.dlg.progress_bar.value() + 1)
-            if f.geometry().wkbType() == QGis.WKBPolygon or f.geometry().wkbType() == QGis.WKBMultiPolygon or f.geometry().wkbType() == QGis.WKBPolygon25D or f.geometry().wkbType() == QGis.WKBMultiPolygon25D :
+            if f.geometry().wkbType() == QgsWkbTypes.Polygon or f.geometry().wkbType() == QgsWkbTypes.MultiPolygon or \
+              f.geometry().wkbType() == QgsWkbTypes.Polygon25D or f.geometry().wkbType() == QgsWkbTypes.MultiPolygon25D :
                 # polygon
                 bbox = f.geometry().boundingBox()
                 if not self.inside_polygons():
@@ -600,11 +649,11 @@ class FeatureGridCreator:
                         start_x += ddx
                     start_y += self.dy()
             # lines
-            elif f.geometry().wkbType() == QGis.WKBLineString:
+            elif f.geometry().wkbType() == QgsWkbTypes.LineString:
                 if self.feature_type() == self.TRENCH_FEATURES:
                     start_x = 0
                 fts.extend(self.handle_line(start_x, start_y, self.dx(), f.geometry()))
-            elif f.geometry().wkbType() == QGis.WKBMultiLineString:
+            elif f.geometry().wkbType() == QgsWkbTypes.MultiLineString:
                 QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate("featuregridcreator", "Sorry, MultiLinestring currently not supported."), QMessageBox.Ok, QMessageBox.Ok)
 
         provider.addFeatures(fts)
@@ -618,7 +667,7 @@ class FeatureGridCreator:
         ids = []
         for f in memory_lyr.getFeatures(QgsFeatureRequest()):
             ids.append(f.id())
-        memory_lyr.setSelectedFeatures(ids)
+        memory_lyr.selectByIds(ids)
         # set to editing
         memory_lyr.startEditing()
         self.layer = memory_lyr
@@ -634,6 +683,7 @@ class FeatureGridCreator:
         # array with all generated features
         feats = []
         while distance <= length:
+            #log.debug('{} {} {}'.format(distance, length, (distance <= length)))
             # Create a new QgsFeature and assign it the new geometry
             feature = QgsFeature()
             feature.setAttributes([''])
@@ -655,7 +705,7 @@ class FeatureGridCreator:
             return QgsGeometry.fromRect(QgsRectangle(x - l, y - w, x + l, y + w)), self.RESULT_FEATURE_TRENCH_STRAIGHT  # 1 meaning a straight trench
         else:
             # a polygon with points
-            return QgsGeometry.fromPoint(QgsPoint(x, y)), self.RESULT_FEATURE_POINT  # 0 meaning a point
+            return QgsGeometry.fromPointXY(QgsPointXY(x, y)), self.RESULT_FEATURE_POINT  # 0 meaning a point
 
     def create_point_or_trench_on_line(self, line_geom, distance, interval):
         # Get a point on the line at current distance
@@ -664,16 +714,19 @@ class FeatureGridCreator:
             # trench width and length in centimeters
             w = self.trench_width() / 100
             l = self.trench_length() / 100
-            x1 = geom.asPoint().x()
-            y1 = geom.asPoint().y()
+            #x1 = geom.asPoint().x()
+            #y1 = geom.asPoint().y()
             # a non rotated trench
             #return QgsGeometry.fromRect(QgsRectangle(x1-l, y1-w, x1+l, y1+w))
             # a trench in the direction of the line
             geom2 = line_geom.interpolate(distance + l)  # interpolate returns a QgsGeometry-point
-            vertices = [geom.asPoint()]
+            vertices = [geom.constGet()]
             # BUT check if there are vertices on this line_geom in between
             # see if there are vertices on the path here...
-            vertices.append(geom2.asPoint())
+            if geom2.isNull():   # IF interpolation is AFTER the last vertex: interpolate returns a NULL geom...
+                # then make geom2 the last vertex of the line (to have a shorter trench)
+                geom2 = QgsGeometry.fromPointXY(line_geom.asPolyline()[-1])
+            vertices.append(geom2.constGet())
             line = QgsGeometry.fromPolyline(vertices)
             # checking if length of the generated line is as requested
             # if the difference is more then 1 cm (comparing floats....)
@@ -726,7 +779,7 @@ class FeatureGridCreator:
         elif not self.layer.isValid():
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_VALID_LAYER), QMessageBox.Ok, QMessageBox.Ok)
             bail_out = True
-        elif len(self.layer.selectedFeaturesIds()) == 0:
+        elif self.layer.selectedFeatureCount() == 0:
             QMessageBox.warning(self.iface.mainWindow(), self.MSG_BOX_TITLE, QCoreApplication.translate(self.SETTINGS_SECTION, self.MSG_NO_SELECTED_FEATURES), QMessageBox.Ok, QMessageBox.Ok)
             bail_out = True
         elif not self.layer.isEditable():
@@ -748,7 +801,7 @@ class FeatureGridCreator:
         self.iface.mapCanvas().setMapTool(self.tool)
         # deactivate this tool when the layer is being deleted!
         if self.layer:
-            self.layer.layerDeleted.connect(self.stop_labeling)
+            self.layer.destroyed.connect(self.stop_labeling)
         # deactivate this tool when user selects another layer
         self.iface.currentLayerChanged.connect(self.stop_labeling)
 
@@ -789,7 +842,7 @@ class LabelTool(QgsMapTool):
                                        "       +.+      "]))
 
     def label(self, number):
-        lbl = unicode(number)
+        lbl = str(number)
         if not self.prefix in ['prefix', '']:
             lbl = self.prefix + '_' + lbl
         if not self.postfix in ['postfix', '']:
@@ -814,7 +867,7 @@ class LabelTool(QgsMapTool):
         r.setYMaximum(point.y() + search_radius)
         for f in self.layer.getFeatures(
                 QgsFeatureRequest().setFilterRect(r).setFlags(QgsFeatureRequest.ExactIntersect)):
-            if f.id() in self.layer.selectedFeaturesIds():
+            if f.id() in self.layer.selectedFeatureIds():
                 label = self.label(self.counter)
                 attrs = {0: label}
                 self.counter += 1
@@ -838,9 +891,9 @@ class LabelTool(QgsMapTool):
                 attrs = {0: ''}
                 undo_ft = self.labeled_ids.pop()
                 self.layer.dataProvider().changeAttributeValues({undo_ft: attrs})
-                selected_ids = self.layer.selectedFeaturesIds()
+                selected_ids = self.layer.selectedFeatureIds()
                 selected_ids.append(undo_ft)
-                self.layer.setSelectedFeatures(selected_ids)
+                self.layer.selectByIds(selected_ids)
                 self.layer.updateFields()
                 return
 
@@ -853,16 +906,31 @@ class LabelTool(QgsMapTool):
         #self.canvas.setInteractive(True) # not working
         # init
         self.features = []
-        # labeling settings
-        palyr = QgsPalLayerSettings()
-        palyr.readFromLayer(self.layer)
-        palyr.enabled = True
-        palyr.fieldName = 'code'
-        palyr.placement = QgsPalLayerSettings.AroundPoint
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '10', '')
-        palyr.writeToLayer(self.layer)
         for f in self.layer.getFeatures(QgsFeatureRequest()):
-            self.features.append(f)
+            self.features.append(f)        
+        # labeling settings    
+        # https://gis.stackexchange.com/questions/273266/reading-and-setting-label-settings-in-pyqgis-3
+        settings  = QgsPalLayerSettings()
+        
+        text_format = QgsTextFormat()
+        text_format.setFont(QFont("Arial", 10))
+        text_format.setSize(12)
+        settings.setFormat(text_format)
+        
+        buffer_settings = QgsTextBufferSettings()
+        buffer_settings.setEnabled(True)
+        buffer_settings.setSize(1)
+        buffer_settings.setColor(QColor("white"))
+        text_format.setBuffer(buffer_settings)
+        
+        settings.fieldName = "code"
+        #settings.placement = 2
+        settings.enabled = True
+        settings = QgsVectorLayerSimpleLabeling(settings)
+        self.layer.setLabelsEnabled(True)
+        self.layer.setLabeling(settings)
+        self.layer.triggerRepaint()
+
 
     def deactivate(self):
         self.layer = None

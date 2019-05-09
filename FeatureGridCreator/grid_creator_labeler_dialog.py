@@ -23,13 +23,14 @@
 
 import os
 
-from PyQt4 import QtGui, uic
+from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt import uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'grid_creator_labeler.ui'))
 
 
-class FeatureGridCreatorLabelerDialog(QtGui.QDialog, FORM_CLASS):
+class FeatureGridCreatorLabelerDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(FeatureGridCreatorLabelerDialog, self).__init__(parent)

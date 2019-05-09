@@ -1,6 +1,13 @@
 *.pyc
 *.swp
+*.qgs~
 FeatureGridCreator/help/html
 FeatureGridCreator/help/build
 .idea
+*.e4p
+.eric6project
+.project
+.pydevproject
+.settings
+
 
