@@ -26,6 +26,8 @@
 #Add iso code for any locales you want to support here (space separated)
 LOCALES = nl
 
+VERSION=$(shell cat metadata.txt | grep version= | sed -e 's,version=,,')
+
 # translation
 SOURCES = \
 	__init__.py \
@@ -58,7 +60,7 @@ HELP = help/html/
 
 PLUGIN_UPLOAD = $(c)/plugin_upload.py
 
-QGISDIR=.local/share/QGIS/QGIS3/profiles/default
+QGISDIR=/home/richard/.local/share/QGIS/QGIS3/profiles/default
 
 default: compile
 
@@ -132,8 +134,9 @@ zip: deploy dclean
 	@echo "---------------------------"
 	# The zip target deploys the plugin and creates a zip file with the deployed
 	# content. You can then upload the zip file on http://plugins.qgis.org
-	rm -f $(PLUGINNAME).zip
-	cd $(HOME)/$(QGISDIR)/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME).zip $(PLUGINNAME)
+	rm -f $(CURDIR)/repo/$(PLUGINNAME).zip
+	cd $(HOME)/$(QGISDIR)/python/plugins; zip -9r $(CURDIR)/repo/$(PLUGINNAME).$(VERSION).zip $(PLUGINNAME)
+	@echo Successfully created zip: $(CURDIR)/repo/$(PLUGINNAME).$(VERSION).zip
 
 package: compile
 	# Create a zip package of the plugin named $(PLUGINNAME).zip.
